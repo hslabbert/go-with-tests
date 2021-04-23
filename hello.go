@@ -5,6 +5,7 @@ import "fmt"
 var languagePrefixes = map[string]string{
 	"English": "Hello, ",
 	"Spanish": "Hola, ",
+	"French":  "Bonjour, ",
 }
 
 func Hello(name, language string) string {
