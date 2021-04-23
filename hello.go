@@ -2,15 +2,22 @@ package main
 
 import "fmt"
 
-const englishHelloPrefix = "Hello, "
+var languagePrefixes = map[string]string{
+	"English": "Hello, ",
+	"Spanish": "Hola, ",
+}
 
-func Hello(name string) string {
+func Hello(name, language string) string {
 	if name == "" {
 		name = "World"
 	}
-	return englishHelloPrefix + name
+
+	if language == "" {
+		language = "English"
+	}
+	return languagePrefixes[language] + name
 }
 
 func main() {
-	fmt.Println(Hello("world"))
+	fmt.Println(Hello("world", ""))
 }
