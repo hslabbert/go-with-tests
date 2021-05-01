@@ -2,6 +2,13 @@ package shapes
 
 import "math"
 
+// Shape is the interface that wraps an Area method.
+//
+// Area returns the area of a geometric shape.
+type Shape interface {
+	Area() float64
+}
+
 // A Rectangle has Height and Width to represent a rectangle shape.
 type Rectangle struct {
 	Width  float64
@@ -13,8 +20,7 @@ type Circle struct {
 	Radius float64
 }
 
-// Perimeter takes width and height of a rectangle and
-// returns its perimeter.
+// Perimeter takes a Rectangle and returns its perimeter.
 func Perimeter(rectangle Rectangle) float64 {
 	return 2 * (rectangle.Width + rectangle.Height)
 }
