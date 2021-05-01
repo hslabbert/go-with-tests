@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// ErrInsufficientFunds is returned for insufficient funds in a Wallet.
+var ErrInsufficientFunds = errors.New(":sad_trombone: you broke, mate")
 
 // A Bitcoin is just a special, snowflakey int.
 type Bitcoin int
@@ -11,6 +17,7 @@ type Wallet struct {
 	balance Bitcoin
 }
 
+// Stringer is the wrapper for implementing a String method.
 type Stringer interface {
 	String() string
 }
@@ -25,8 +32,14 @@ func (w *Wallet) Deposit(amount Bitcoin) {
 }
 
 // Withdraw will withdraw Bitcoin from a Wallet.
-func (w *Wallet) Withdraw(amount Bitcoin) {
+func (w *Wallet) Withdraw(amount Bitcoin) error {
+
+	if amount > w.balance {
+		return ErrInsufficientFunds
+	}
+
 	w.balance -= amount
+	return nil
 }
 
 // Balance will return the Bitcoin balance of a Wallet.
