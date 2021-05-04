@@ -1,10 +1,18 @@
 package dictionary
 
-import "errors"
+// A set of DictionaryErr definitions
+const (
+	ErrNotFound   = DictionaryErr("could not find the word you were looking for")
+	ErrWordExists = DictionaryErr("cannot add word because it already exists")
+)
 
-// ErrNotFound is returned if a definition is not found in a
-// Dictionary for a word or phrase.
-var ErrNotFound = errors.New("could not find the word you were looking for")
+// A DictionaryErr encapsulates various errors on accessing or
+// manipulating dictionaries.
+type DictionaryErr string
+
+func (e DictionaryErr) Error() string {
+	return string(e)
+}
 
 // A Dictionary is a map
 type Dictionary map[string]string
@@ -21,6 +29,17 @@ func (d Dictionary) Search(word string) (string, error) {
 }
 
 // Add will add a word into an existing Dictionary.
-func (d Dictionary) Add(word, definition string) {
-	d[word] = definition
+func (d Dictionary) Add(word, definition string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		d[word] = definition
+	case nil:
+		return ErrWordExists
+	default:
+		return err
+	}
+
+	return nil
 }
