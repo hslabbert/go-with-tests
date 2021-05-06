@@ -15,12 +15,15 @@ type Sleeper interface {
 	Sleep()
 }
 
-// DefaultSleeper implements a time.Second-driven Sleep method.
-type DefaultSleeper struct{}
+// ConfigurableSleeper implements an arbitrary Sleep duration.
+type ConfigurableSleeper struct {
+	duration time.Duration
+	sleep    func(time.Duration)
+}
 
-// Sleep implements a time.Second-driven method on DefaultSleeper.
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
+// Sleep will sleep for c.duration using the c.sleep function.
+func (c *ConfigurableSleeper) Sleep() {
+	c.sleep(c.duration)
 }
 
 // Countdown takes an io.Writer write a countdown from 3, 2, 1, Go!
@@ -34,6 +37,6 @@ func Countdown(out io.Writer, sleeper Sleeper) {
 }
 
 func main() {
-	sleeper := &DefaultSleeper{}
+	sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
 	Countdown(os.Stdout, sleeper)
 }
