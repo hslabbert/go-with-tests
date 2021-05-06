@@ -15,7 +15,7 @@ type Sleeper interface {
 	Sleep()
 }
 
-// ConfigurableSleeper implements an arbitrary Sleep duration.
+// ConfigurableSleeper implements an arbitrary Sleep duration & function.
 type ConfigurableSleeper struct {
 	duration time.Duration
 	sleep    func(time.Duration)
