@@ -8,6 +8,11 @@ type Counter struct {
 	value int
 }
 
+// NewCounter initializes a new *Counter struct.
+func NewCounter() *Counter {
+	return &Counter{}
+}
+
 // Inc takes no aruguments, and will increment a Counter's value.
 func (c *Counter) Inc() {
 	c.mu.Lock()
