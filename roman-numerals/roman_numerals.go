@@ -2,14 +2,34 @@ package numerals
 
 import "strings"
 
-// A RomanNumeral contains an int Value and its Roman Numeral
-// Symbol representation
-type RomanNumeral struct {
-	Value  int
+type romanNumeral struct {
+	Value  uint16
 	Symbol string
 }
 
-var allRomanNumerals = []RomanNumeral{
+type romanNumerals []romanNumeral
+
+func (r romanNumerals) ValueOf(symbols ...byte) uint16 {
+	symbol := string(symbols)
+	for _, s := range r {
+		if s.Symbol == symbol {
+			return s.Value
+		}
+	}
+	return 0
+}
+
+func (r romanNumerals) Exists(symbols ...byte) bool {
+	symbol := string(symbols)
+	for _, s := range r {
+		if s.Symbol == symbol {
+			return true
+		}
+	}
+	return false
+}
+
+var allRomanNumerals = romanNumerals{
 	{1000, "M"},
 	{900, "CM"},
 	{500, "D"},
@@ -25,9 +45,26 @@ var allRomanNumerals = []RomanNumeral{
 	{1, "I"},
 }
 
+type windowedRoman string
+
+func (w windowedRoman) Symbols() (symbols [][]byte) {
+	for i := 0; i < len(w); i++ {
+		symbol := w[i]
+		notAtEnd := i+1 < len(w)
+
+		if notAtEnd && isSubtractive(symbol) && allRomanNumerals.Exists(symbol, w[i+1]) {
+			symbols = append(symbols, []byte{byte(symbol), byte(w[i+1])})
+			i++
+		} else {
+			symbols = append(symbols, []byte{byte(symbol)})
+		}
+	}
+	return
+}
+
 // ConvertToRoman takes and integer and returns its
 // Roman Numeral equivalent.
-func ConvertToRoman(arabic int) string {
+func ConvertToRoman(arabic uint16) string {
 
 	var result strings.Builder
 
@@ -39,4 +76,22 @@ func ConvertToRoman(arabic int) string {
 	}
 
 	return result.String()
+}
+
+// ConvertToArabic takes a Roman Numeral and returns its
+// arabic representation.
+func ConvertToArabic(roman string) (total uint16) {
+	for _, symbols := range windowedRoman(roman).Symbols() {
+		total += allRomanNumerals.ValueOf(symbols...)
+	}
+	return
+}
+
+func isSubtractive(s uint8) bool {
+	switch string(s) {
+	case "I", "X", "C":
+		return true
+	default:
+		return false
+	}
 }
