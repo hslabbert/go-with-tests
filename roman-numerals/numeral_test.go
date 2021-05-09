@@ -1,24 +1,44 @@
 package numerals
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestRomanNumerals(t *testing.T) {
 	cases := []struct {
-		Description string
-		Arabic      int
-		Want        string
+		Arabic int
+		Roman  string
 	}{
-		{Description: "1 gets converted to I", Arabic: 1, Want: "I"},
-		{Description: "2 gets converted to II", Arabic: 2, Want: "II"},
-		{Description: "3 gets converted to III", Arabic: 3, Want: "III"},
-		{Description: "4 gets converted to IV (can't repeat more than 3 times", Arabic: 4, Want: "IV"},
-		{Description: "5 gets converted to V", Arabic: 5, Want: "V"},
+		{Arabic: 1, Roman: "I"},
+		{Arabic: 2, Roman: "II"},
+		{Arabic: 3, Roman: "III"},
+		{Arabic: 4, Roman: "IV"},
+		{Arabic: 5, Roman: "V"},
+		{Arabic: 6, Roman: "VI"},
+		{Arabic: 7, Roman: "VII"},
+		{Arabic: 9, Roman: "IX"},
+		{Arabic: 10, Roman: "X"},
+		{Arabic: 14, Roman: "XIV"},
+		{Arabic: 18, Roman: "XVIII"},
+		{Arabic: 20, Roman: "XX"},
+		{Arabic: 39, Roman: "XXXIX"},
+		{Arabic: 54, Roman: "LIV"},
+		{Arabic: 66, Roman: "LXVI"},
+		{Arabic: 89, Roman: "LXXXIX"},
+		{Arabic: 97, Roman: "XCVII"},
+		{Arabic: 201, Roman: "CCI"},
+		{Arabic: 401, Roman: "CDI"},
+		{Arabic: 601, Roman: "DCI"},
+		{Arabic: 801, Roman: "DCCCI"},
+		{Arabic: 901, Roman: "CMI"},
+		{Arabic: 1984, Roman: "MCMLXXXIV"},
 	}
 
 	for _, test := range cases {
-		t.Run(test.Description, func(t *testing.T) {
+		t.Run(fmt.Sprintf("%d gets converted to %s", test.Arabic, test.Roman), func(t *testing.T) {
 			got := ConvertToRoman(test.Arabic)
-			want := test.Want
+			want := test.Roman
 
 			assertNumerals(t, got, want)
 		})
