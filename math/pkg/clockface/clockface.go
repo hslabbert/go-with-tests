@@ -8,10 +8,19 @@ import (
 	"time"
 )
 
-const secondHandLength = 90
-const minuteHandLength = 80
-const clockCentreX = 150
-const clockCentreY = 150
+const (
+	secondHandLength   = 90
+	minuteHandLength   = 80
+	hourHandLength     = 50
+	clockCentreX       = 150
+	clockCentreY       = 150
+	secondsInHalfClock = 30
+	secondsInClock     = 2 * secondsInHalfClock
+	minutesInHalfClock = 30
+	minutesInClock     = 2 * minutesInHalfClock
+	hoursInHalfClock   = 6
+	hoursInClock       = 2 * hoursInHalfClock
+)
 
 // A Point represents a two dimensional Cartesian coordinate.
 type Point struct {
@@ -47,28 +56,28 @@ type Line struct {
 	Y2 float64 `xml:"y2,attr"`
 }
 
-// SecondHand takes an io.Writer and time.Time writes a second hand
-// of length secondHandLength in the SVG representation of an
-// analog clock on a clockCentreX x clockCentreY canvas for that
-// time.
-func SecondHand(w io.Writer, t time.Time) {
+func secondHand(w io.Writer, t time.Time) {
 	p := secondHandPoint(t)
-	p = Point{p.X * secondHandLength, p.Y * secondHandLength}
-	p = Point{p.X, -p.Y}
-	p = Point{p.X + clockCentreX, p.Y + clockCentreY}
+	p = makeHand(p, secondHandLength)
 	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
-// MinuteHand takes an io.Writer and time.Time writes a minute hand
-// of length minuteHandLength in the SVG representation of an
-// analog clock on a clockCentreX x clockCentreY canvas for that
-// time.
-func MinuteHand(w io.Writer, t time.Time) {
+func minuteHand(w io.Writer, t time.Time) {
 	p := minuteHandPoint(t)
-	p = Point{p.X * minuteHandLength, p.Y * minuteHandLength}
-	p = Point{p.X, -p.Y}
-	p = Point{p.X + clockCentreX, p.Y + clockCentreY}
+	p = makeHand(p, minuteHandLength)
 	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`, p.X, p.Y)
+}
+
+func hourHand(w io.Writer, t time.Time) {
+	p := hourHandPoint(t)
+	p = makeHand(p, hourHandLength)
+	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`, p.X, p.Y)
+}
+
+func makeHand(p Point, length float64) Point {
+	p = Point{p.X * length, p.Y * length}
+	p = Point{p.X, -p.Y}
+	return Point{p.X + clockCentreX, p.Y + clockCentreY}
 }
 
 // SVGWriter takes an io.Writer and time.Time will write a SVG
@@ -77,8 +86,9 @@ func MinuteHand(w io.Writer, t time.Time) {
 func SVGWriter(w io.Writer, t time.Time) {
 	io.WriteString(w, svgStart)
 	io.WriteString(w, bezel)
-	SecondHand(w, t)
-	MinuteHand(w, t)
+	secondHand(w, t)
+	minuteHand(w, t)
+	hourHand(w, t)
 	io.WriteString(w, svgEnd)
 }
 
@@ -96,12 +106,20 @@ func minuteHandPoint(t time.Time) Point {
 	return angleToPoint(minutesInRadians(t))
 }
 
+func hourHandPoint(t time.Time) Point {
+	return angleToPoint(hoursInRadians(t))
+}
+
 func secondsInRadians(t time.Time) float64 {
-	return (math.Pi / (30 / float64(t.Second())))
+	return (math.Pi / (secondsInHalfClock / float64(t.Second())))
 }
 
 func minutesInRadians(t time.Time) float64 {
-	return (secondsInRadians(t) / 60) + (math.Pi / (30 / float64(t.Minute())))
+	return (secondsInRadians(t) / minutesInClock) + (math.Pi / (minutesInHalfClock / float64(t.Minute())))
+}
+
+func hoursInRadians(t time.Time) float64 {
+	return (minutesInRadians(t) / hoursInClock) + (math.Pi / (hoursInHalfClock / float64(t.Hour()%hoursInClock)))
 }
 
 func simpleTime(
