@@ -16,24 +16,34 @@ type PlayerServer struct {
 // a player's score.
 type PlayerStore interface {
 	GetPlayerScore(name string) int
+	RecordWin(name string)
 }
 
 // ServerHTTP handles HTTP requests on a PlayerStore,
 // satisfying the http.Handler interface.
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
-	fmt.Fprint(w, p.store.GetPlayerScore(player))
+
+	switch r.Method {
+	case http.MethodPost:
+		p.processWin(w, player)
+	case http.MethodGet:
+		p.showScore(w, player)
+	}
 }
 
-// GetPlayerScore takes a Player's name and retrieves their score.
-func GetPlayerScore(name string) string {
-	if name == "Pepper" {
-		return "20"
+func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
+	score := p.store.GetPlayerScore(player)
+
+	if score == 0 {
+		w.WriteHeader(http.StatusNotFound)
 	}
 
-	if name == "Floyd" {
-		return "10"
-	}
+	fmt.Fprint(w, score)
+}
 
-	return ""
+func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
+	p.store.RecordWin(player)
+	w.WriteHeader(http.StatusAccepted)
 }
