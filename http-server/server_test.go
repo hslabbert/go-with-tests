@@ -7,7 +7,26 @@ import (
 	"testing"
 )
 
+type StubPlayerStore struct {
+	scores map[string]int
+}
+
+func (s *StubPlayerStore) GetPlayerScore(name string) int {
+	score := s.scores[name]
+	return score
+}
+
 func TestGETPlayers(t *testing.T) {
+
+	store := StubPlayerStore{
+		map[string]int{
+			"Pepper": 20,
+			"Floyd":  10,
+		},
+	}
+
+	server := &PlayerServer{&store}
+
 	cases := []struct {
 		Player string
 		Score  string
@@ -21,7 +40,7 @@ func TestGETPlayers(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", test.Player), nil)
 			response := httptest.NewRecorder()
 
-			PlayerServer(response, request)
+			server.ServeHTTP(response, request)
 
 			got := response.Body.String()
 			want := test.Score
