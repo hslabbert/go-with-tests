@@ -7,7 +7,7 @@ import (
 )
 
 // A PlayerServer implements the needed methods to satisfy the
-// http.Handler interface, and holds a PlayerStore.
+// http.Handler interface (ServeHTTP), and holds a PlayerStore.
 type PlayerServer struct {
 	store PlayerStore
 }
@@ -16,7 +16,7 @@ type PlayerServer struct {
 // a player's score.
 type PlayerStore interface {
 	GetPlayerScore(name string) int
-	RecordWin(name string)
+	RecordWin(name string) error
 }
 
 // ServerHTTP handles HTTP requests on a PlayerStore,
@@ -44,6 +44,6 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-	p.store.RecordWin(player)
+	_ = p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }

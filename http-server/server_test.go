@@ -17,8 +17,9 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	return score
 }
 
-func (s *StubPlayerStore) RecordWin(name string) {
+func (s *StubPlayerStore) RecordWin(name string) error {
 	s.winCalls = append(s.winCalls, name)
+	return nil
 }
 
 func TestGETPlayers(t *testing.T) {

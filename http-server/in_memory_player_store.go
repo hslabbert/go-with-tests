@@ -13,10 +13,11 @@ type InMemoryPlayerStore struct {
 	mu    sync.RWMutex
 }
 
-func (i *InMemoryPlayerStore) RecordWin(name string) {
+func (i *InMemoryPlayerStore) RecordWin(name string) error {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	i.store[name]++
+	return nil
 }
 
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {

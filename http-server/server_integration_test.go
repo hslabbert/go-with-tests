@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+func TestInMemoryRecordingWinsAndRetrievingThem(t *testing.T) {
 	store := NewInMemoryPlayerStore()
 	server := PlayerServer{store}
 
@@ -21,4 +21,23 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	assertStatus(t, response.Code, http.StatusOK)
 
 	assertResponseBody(t, response.Body.String(), "3")
+}
+
+func TestSqliteRecordingWinsAndRetrievingThem(t *testing.T) {
+	store, _ := NewSqlitePlayerStore("test.db")
+	server := PlayerServer{store}
+	_ = store.DeletePlayerScores()
+
+	player := "Pepper"
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+
+	response := httptest.NewRecorder()
+	server.ServeHTTP(response, newGetScoreRequest(player))
+	assertStatus(t, response.Code, http.StatusOK)
+
+	assertResponseBody(t, response.Body.String(), "3")
+	_ = store.DeletePlayerScores()
 }
