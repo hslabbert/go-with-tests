@@ -7,6 +7,6 @@ import (
 
 func main() {
 	store, _ := NewSqlitePlayerStore("./store.db")
-	server := &PlayerServer{store}
+	server := NewPlayerServer(store)
 	log.Fatal(http.ListenAndServe(":5000", server))
 }

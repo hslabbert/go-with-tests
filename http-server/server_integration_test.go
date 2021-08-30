@@ -8,7 +8,7 @@ import (
 
 func TestInMemoryRecordingWinsAndRetrievingThem(t *testing.T) {
 	store := NewInMemoryPlayerStore()
-	server := PlayerServer{store}
+	server := NewPlayerServer(store)
 
 	player := "Pepper"
 
@@ -25,7 +25,7 @@ func TestInMemoryRecordingWinsAndRetrievingThem(t *testing.T) {
 
 func TestSqliteRecordingWinsAndRetrievingThem(t *testing.T) {
 	store, _ := NewSqlitePlayerStore("test.db")
-	server := PlayerServer{store}
+	server := NewPlayerServer(store)
 	_ = store.DeletePlayerScores()
 
 	player := "Pepper"
