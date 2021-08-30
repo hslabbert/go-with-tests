@@ -9,18 +9,21 @@ import (
 // A PlayerServer implements the needed methods to satisfy the
 // http.Handler interface (ServeHTTP), and holds a PlayerStore.
 type PlayerServer struct {
-	store  PlayerStore
-	router *http.ServeMux
+	store PlayerStore
+	http.Handler
 }
 
 func NewPlayerServer(store PlayerStore) *PlayerServer {
-	p := &PlayerServer{
-		store,
-		http.NewServeMux(),
-	}
+	p := new(PlayerServer)
 
-	p.router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-	p.router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+	p.store = store
+
+	router := http.NewServeMux()
+
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+
+	p.Handler = router
 
 	return p
 }
@@ -30,13 +33,6 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string) error
-}
-
-// ServerHTTP handles HTTP requests on a PlayerStore,
-// satisfying the http.Handler interface.
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	p.router.ServeHTTP(w, r)
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
