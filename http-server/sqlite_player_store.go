@@ -34,6 +34,9 @@ func NewSqlitePlayerStore(f string) (*SqlitePlayerStore, error) {
 	}, nil
 }
 
+// A SqlitePlayerStore encapsulates a sqlite *sql.DB with a set of
+// necessary prepared *sql.Stmt to perform various operations on the
+// *sql.DB
 type SqlitePlayerStore struct {
 	db                   *sql.DB
 	insertScoreStatement *sql.Stmt
@@ -41,6 +44,8 @@ type SqlitePlayerStore struct {
 	deleteScoreStatement *sql.Stmt
 }
 
+// GetPlayerScore returns a player's score from the provided
+// *SqlitePlayerStore.
 func (s *SqlitePlayerStore) GetPlayerScore(name string) int {
 	row := s.db.QueryRow("SELECT score FROM playerscores WHERE name=?", name)
 	var score int
@@ -51,6 +56,8 @@ func (s *SqlitePlayerStore) GetPlayerScore(name string) int {
 	return score
 }
 
+// RecordWin adds one win to the provided player's score in the
+// provided *SqlitePlayerStore.
 func (s *SqlitePlayerStore) RecordWin(name string) error {
 	currentScore := s.GetPlayerScore(name)
 	var statement *sql.Stmt
@@ -73,6 +80,8 @@ func (s *SqlitePlayerStore) RecordWin(name string) error {
 	return err
 }
 
+// DeletePlayerScores removes all player scores from the provided
+// *SqlitePlayerStore in order to blank the score database.
 func (s *SqlitePlayerStore) DeletePlayerScores() error {
 	tx, err := s.db.Begin()
 	if err != nil {
