@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,6 +12,12 @@ import (
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+}
+
+// A Player holds a player's name and score.
+type Player struct {
+	Name string
+	Wins int
 }
 
 // NewPlayerServer takes a PlayerStore and returns a
@@ -39,6 +46,11 @@ type PlayerStore interface {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	leagueTable := []Player{
+		{"Chris", 20},
+	}
+
+	_ = json.NewEncoder(w).Encode(leagueTable)
 	w.WriteHeader(http.StatusOK)
 }
 
