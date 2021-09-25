@@ -13,6 +13,9 @@ type PlayerServer struct {
 	http.Handler
 }
 
+// NewPlayerServer takes a PlayerStore and returns a
+// *PlayerServer with the needed *http.ServeMux router
+// as the PlayerServer.Handler.
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 
