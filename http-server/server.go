@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const jsonContentType = "application/json"
+
 // A PlayerServer implements the needed methods to satisfy the
 // http.Handler interface (ServeHTTP), and holds a PlayerStore.
 type PlayerServer struct {
@@ -43,17 +45,12 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string) error
+	GetLeague() []Player
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	_ = json.NewEncoder(w).Encode(p.getLeagueTable())
-	w.WriteHeader(http.StatusOK)
-}
-
-func (p *PlayerServer) getLeagueTable() []Player {
-	return []Player{
-		{"Chris", 20},
-	}
+	w.Header().Set("content-type", jsonContentType)
+	_ = json.NewEncoder(w).Encode(p.store.GetLeague())
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {

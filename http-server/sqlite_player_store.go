@@ -95,3 +95,17 @@ func (s *SqlitePlayerStore) DeletePlayerScores() error {
 	}
 	return err
 }
+
+// GetLeague returns a []Player representing all of the players
+// in the *SqlitePlayerStore with their scores.
+func (s *SqlitePlayerStore) GetLeague() []Player {
+	var league []Player
+	rows, _ := s.db.Query("SELECT name, score FROM playerscores")
+	var name string
+	var wins int
+	for rows.Next() {
+		_ = rows.Scan(&name, &wins)
+		league = append(league, Player{name, wins})
+	}
+	return league
+}

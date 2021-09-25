@@ -1,43 +1,51 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func TestInMemoryRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
-	server := NewPlayerServer(store)
+func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	inMemoryStore := NewInMemoryPlayerStore()
+	sqLiteStore, _ := NewSqlitePlayerStore("test.db")
+	_ = sqLiteStore.DeletePlayerScores()
 
 	player := "Pepper"
 
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	cases := []struct {
+		storeType string
+		server    *PlayerServer
+	}{
+		{"InMemoryPlayerStore", NewPlayerServer(inMemoryStore)},
+		{"SqlitePlayerStore", NewPlayerServer(sqLiteStore)},
+	}
 
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-	assertStatus(t, response.Code, http.StatusOK)
+	for _, c := range cases {
+		c.server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+		c.server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+		c.server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 
-	assertResponseBody(t, response.Body.String(), "3")
-}
+		t.Run(fmt.Sprintf("get %v score", c.storeType), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			c.server.ServeHTTP(response, newGetScoreRequest(player))
+			assertStatus(t, response.Code, http.StatusOK)
 
-func TestSqliteRecordingWinsAndRetrievingThem(t *testing.T) {
-	store, _ := NewSqlitePlayerStore("test.db")
-	server := NewPlayerServer(store)
-	_ = store.DeletePlayerScores()
+			assertResponseBody(t, response.Body.String(), "3")
+		})
 
-	player := "Pepper"
+		t.Run(fmt.Sprintf("get %v league", c.storeType), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			c.server.ServeHTTP(response, newLeagueRequest())
+			assertStatus(t, response.Code, http.StatusOK)
 
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
-
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-	assertStatus(t, response.Code, http.StatusOK)
-
-	assertResponseBody(t, response.Body.String(), "3")
-	_ = store.DeletePlayerScores()
+			got := getLeagueFromResponse(t, response.Body)
+			want := []Player{
+				{"Pepper", 3},
+			}
+			assertLeague(t, got, want)
+		})
+	}
+	_ = sqLiteStore.DeletePlayerScores()
 }
