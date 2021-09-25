@@ -34,9 +34,9 @@ func NewSqlitePlayerStore(f string) (*SqlitePlayerStore, error) {
 	}, nil
 }
 
-// A SqlitePlayerStore encapsulates a sqlite *sql.DB with a set of
-// necessary prepared *sql.Stmt to perform various operations on the
-// *sql.DB
+// A SqlitePlayerStore is a PlayerStore with sqlite-backed storage
+// It encapsulates a sqlite *sql.DB with a set of necessary prepared
+// *sql.Stmt to perform various operations on the *sql.DB.
 type SqlitePlayerStore struct {
 	db                   *sql.DB
 	insertScoreStatement *sql.Stmt
