@@ -17,7 +17,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	fileDatabase, cleanFileDatabase := createTempFile(t, "")
 	defer cleanFileDatabase()
 
-	fileStore := &FileSystemPlayerStore{fileDatabase}
+	fileStore := NewFileSystemPlayerStore(fileDatabase)
 
 	player := "Pepper"
 
