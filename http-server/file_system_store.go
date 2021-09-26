@@ -13,6 +13,8 @@ type FileSystemPlayerStore struct {
 	league   League
 }
 
+// NewFileSystemPlayerStore constructs a *FileSystemPlayerStore with the
+// provided json-formatted database file.
 func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
 	database.Seek(0, 0)
 	league, _ := NewLeague(database)
