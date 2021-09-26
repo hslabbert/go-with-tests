@@ -19,7 +19,7 @@ func TestFileSystemStore(t *testing.T) {
 	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
 
-		want := []Player{
+		want := League{
 			{"Cleo", 10},
 			{"Chris", 33},
 		}

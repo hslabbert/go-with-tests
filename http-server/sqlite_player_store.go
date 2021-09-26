@@ -96,10 +96,10 @@ func (s *SqlitePlayerStore) DeletePlayerScores() error {
 	return err
 }
 
-// GetLeague returns a []Player representing all of the players
+// GetLeague returns a League representing all of the players
 // in the *SqlitePlayerStore with their scores.
-func (s *SqlitePlayerStore) GetLeague() []Player {
-	var league []Player
+func (s *SqlitePlayerStore) GetLeague() League {
+	var league League
 	rows, _ := s.db.Query("SELECT name, score FROM playerscores")
 	var name string
 	var wins int
