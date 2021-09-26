@@ -9,7 +9,7 @@ import (
 // interface with filesystem backing, storing the
 // Player data in a json file on disk.
 type FileSystemPlayerStore struct {
-	database io.ReadWriteSeeker
+	database io.Writer
 	league   League
 }
 
@@ -18,8 +18,9 @@ type FileSystemPlayerStore struct {
 func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
 	database.Seek(0, 0)
 	league, _ := NewLeague(database)
+
 	return &FileSystemPlayerStore{
-		database: database,
+		database: &tape{database},
 		league:   league,
 	}
 }
@@ -53,8 +54,6 @@ func (f *FileSystemPlayerStore) RecordWin(name string) error {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
-
-	f.database.Seek(0, 0)
 
 	err := json.NewEncoder(f.database).Encode(f.league)
 	return err
