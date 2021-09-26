@@ -39,6 +39,21 @@ func TestFileSystemStore(t *testing.T) {
 		assertScoreEquals(t, got, want)
 	})
 
+	t.Run("league sorted", func(t *testing.T) {
+		got := store.GetLeague()
+
+		want := []Player{
+			{"Chris", 33},
+			{"Cleo", 10},
+		}
+
+		assertLeague(t, got, want)
+
+		// read again
+		got = store.GetLeague()
+		assertLeague(t, got, want)
+	})
+
 	t.Run("store wins for existing players", func(t *testing.T) {
 		err := store.RecordWin("Chris")
 		assertNoError(t, err)
@@ -57,6 +72,8 @@ func TestFileSystemStore(t *testing.T) {
 		assertScoreEquals(t, got, want)
 	})
 
+	// NOTE: this test reinitializes an empty file rather than reusing the
+	// same/existing database file from the earlier runners.
 	t.Run("works with an empty file", func(t *testing.T) {
 		database, cleanDatabase = createTempFile(t, "")
 		defer cleanDatabase()
