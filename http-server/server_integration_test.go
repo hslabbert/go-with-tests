@@ -11,6 +11,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	inMemoryStore := NewInMemoryPlayerStore()
 	sqliteStore, _ := NewSqlitePlayerStore("test.db")
 	_ = sqliteStore.DeletePlayerScores()
+	defer sqliteStore.DeletePlayerScores()
 
 	player := "Pepper"
 
@@ -47,5 +48,4 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 			assertLeague(t, got, want)
 		})
 	}
-	_ = sqliteStore.DeletePlayerScores()
 }
