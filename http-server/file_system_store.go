@@ -22,6 +22,24 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 		return nil, fmt.Errorf("problem resetting to 0 offset on file %s, %v", file.Name(), err)
 	}
 
+	info, err := file.Stat()
+
+	if err != nil {
+		return nil, fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		_, err := file.Write([]byte("[]"))
+		if err != nil {
+			return nil, fmt.Errorf("problem writing empty league to blank file %s, %v", file.Name(), err)
+		}
+
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			return nil, fmt.Errorf("problem resetting to 0 offset on file %s, %v", file.Name(), err)
+		}
+	}
+
 	league, err := NewLeague(file)
 
 	if err != nil {
