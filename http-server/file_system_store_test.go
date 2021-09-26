@@ -13,7 +13,9 @@ func TestFileSystemStore(t *testing.T) {
 		{"Name": "Chris", "Wins": 33}]`)
 
 	defer cleanDatabase()
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
+
+	assertNoError(t, err)
 
 	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
@@ -70,7 +72,9 @@ func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 		t.Fatalf("could not create temp file %v", err)
 	}
 
-	tmpfile.Write([]byte(initialData))
+	_, err = tmpfile.Write([]byte(initialData))
+
+	assertNoError(t, err)
 
 	removeFile := func() {
 		tmpfile.Close()
@@ -78,4 +82,11 @@ func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	}
 
 	return tmpfile, removeFile
+}
+
+func assertNoError(t testing.TB, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didn't expect an error but got one, %v", err)
+	}
 }

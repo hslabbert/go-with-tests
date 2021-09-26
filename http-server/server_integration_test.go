@@ -14,10 +14,12 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	_ = sqliteStore.DeletePlayerScores()
 	defer sqliteStore.DeletePlayerScores()
 
-	fileDatabase, cleanFileDatabase := createTempFile(t, "")
+	fileDatabase, cleanFileDatabase := createTempFile(t, `[]`)
 	defer cleanFileDatabase()
 
-	fileStore := NewFileSystemPlayerStore(fileDatabase)
+	fileStore, err := NewFileSystemPlayerStore(fileDatabase)
+
+	assertNoError(t, err)
 
 	player := "Pepper"
 
