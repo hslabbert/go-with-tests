@@ -37,6 +37,14 @@ func TestFileSystemStore(t *testing.T) {
 
 		assertScoreEquals(t, got, want)
 	})
+
+	t.Run("store wins for existing players", func(t *testing.T) {
+		store.RecordWin("Chris")
+
+		got := store.GetPlayerScore("Chris")
+		want := 34
+		assertScoreEquals(t, got, want)
+	})
 }
 
 func assertScoreEquals(t testing.TB, got, want int) {
