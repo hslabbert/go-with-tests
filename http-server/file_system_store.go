@@ -8,7 +8,7 @@ import (
 // interface with filesystem backing, storing the
 // Player data in a json file on disk.
 type FileSystemPlayerStore struct {
-	database io.ReadSeeker
+	database io.ReadWriteSeeker
 }
 
 // GetLeague returns a []Player of players stored in
