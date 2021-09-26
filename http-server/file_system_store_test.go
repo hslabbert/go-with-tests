@@ -40,7 +40,8 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("store wins for existing players", func(t *testing.T) {
-		store.RecordWin("Chris")
+		err := store.RecordWin("Chris")
+		assertNoError(t, err)
 
 		got := store.GetPlayerScore("Chris")
 		want := 34
@@ -48,7 +49,8 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("store wins for new players", func(t *testing.T) {
-		store.RecordWin("Pepper")
+		err := store.RecordWin("Pepper")
+		assertNoError(t, err)
 
 		got := store.GetPlayerScore("Pepper")
 		want := 1

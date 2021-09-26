@@ -17,7 +17,11 @@ type FileSystemPlayerStore struct {
 // NewFileSystemPlayerStore constructs a *FileSystemPlayerStore with the
 // provided json-formatted database file.
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
-	file.Seek(0, 0)
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		return nil, fmt.Errorf("problem resetting to 0 offset on file %s, %v", file.Name(), err)
+	}
+
 	league, err := NewLeague(file)
 
 	if err != nil {

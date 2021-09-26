@@ -11,9 +11,12 @@ func TestTape_Write(t *testing.T) {
 
 	tape := &tape{file}
 
-	tape.Write([]byte("abc"))
+	_, err := tape.Write([]byte("abc"))
+	assertNoError(t, err)
 
-	file.Seek(0, 0)
+	_, err = file.Seek(0, 0)
+	assertNoError(t, err)
+
 	newFileContents, _ := ioutil.ReadAll(file)
 
 	got := string(newFileContents)
