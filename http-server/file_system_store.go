@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io"
 	"os"
 )
 
@@ -10,18 +9,18 @@ import (
 // interface with filesystem backing, storing the
 // Player data in a json file on disk.
 type FileSystemPlayerStore struct {
-	database io.Writer
+	database *json.Encoder
 	league   League
 }
 
 // NewFileSystemPlayerStore constructs a *FileSystemPlayerStore with the
 // provided json-formatted database file.
-func NewFileSystemPlayerStore(database *os.File) *FileSystemPlayerStore {
-	database.Seek(0, 0)
-	league, _ := NewLeague(database)
+func NewFileSystemPlayerStore(file *os.File) *FileSystemPlayerStore {
+	file.Seek(0, 0)
+	league, _ := NewLeague(file)
 
 	return &FileSystemPlayerStore{
-		database: &tape{database},
+		database: json.NewEncoder(&tape{file}),
 		league:   league,
 	}
 }
@@ -56,6 +55,6 @@ func (f *FileSystemPlayerStore) RecordWin(name string) error {
 		f.league = append(f.league, Player{name, 1})
 	}
 
-	err := json.NewEncoder(f.database).Encode(f.league)
+	err := f.database.Encode(f.league)
 	return err
 }
