@@ -9,8 +9,8 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	inMemoryStore := NewInMemoryPlayerStore()
-	sqLiteStore, _ := NewSqlitePlayerStore("test.db")
-	_ = sqLiteStore.DeletePlayerScores()
+	sqliteStore, _ := NewSqlitePlayerStore("test.db")
+	_ = sqliteStore.DeletePlayerScores()
 
 	player := "Pepper"
 
@@ -19,7 +19,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		server    *PlayerServer
 	}{
 		{"InMemoryPlayerStore", NewPlayerServer(inMemoryStore)},
-		{"SqlitePlayerStore", NewPlayerServer(sqLiteStore)},
+		{"SqlitePlayerStore", NewPlayerServer(sqliteStore)},
 	}
 
 	for _, c := range cases {
@@ -47,5 +47,5 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 			assertLeague(t, got, want)
 		})
 	}
-	_ = sqLiteStore.DeletePlayerScores()
+	_ = sqliteStore.DeletePlayerScores()
 }
