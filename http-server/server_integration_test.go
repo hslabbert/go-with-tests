@@ -9,9 +9,15 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	inMemoryStore := NewInMemoryPlayerStore()
+
 	sqliteStore, _ := NewSqlitePlayerStore("test.db")
 	_ = sqliteStore.DeletePlayerScores()
 	defer sqliteStore.DeletePlayerScores()
+
+	fileDatabase, cleanFileDatabase := createTempFile(t, "")
+	defer cleanFileDatabase()
+
+	fileStore := &FileSystemPlayerStore{fileDatabase}
 
 	player := "Pepper"
 
@@ -21,6 +27,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	}{
 		{"InMemoryPlayerStore", NewPlayerServer(inMemoryStore)},
 		{"SqlitePlayerStore", NewPlayerServer(sqliteStore)},
+		{"FilePlayerStore", NewPlayerServer(fileStore)},
 	}
 
 	for _, c := range cases {

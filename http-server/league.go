@@ -6,6 +6,7 @@ import (
 	"io"
 )
 
+// A League is a []Player slice.
 type League []Player
 
 // NewLeague takes a league of players provided as a json stream

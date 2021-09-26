@@ -35,7 +35,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 
 // RecordWin increments the score of the named player in the
 // provided *FileSystemPlayerStore.
-func (f *FileSystemPlayerStore) RecordWin(name string) {
+func (f *FileSystemPlayerStore) RecordWin(name string) error {
 	league := f.GetLeague()
 	player := league.Find(name)
 
@@ -46,5 +46,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 	}
 
 	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(league)
+
+	err := json.NewEncoder(f.database).Encode(league)
+	return err
 }
