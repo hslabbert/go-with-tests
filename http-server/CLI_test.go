@@ -1,16 +1,26 @@
 package poker
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
 
 func TestCLI(t *testing.T) {
-	in := strings.NewReader("Chris wins\n")
+	cases := []string{
+		"Cleo",
+		"Chris",
+	}
 
-	playerstore := &StubPlayerStore{}
-	cli := &CLI{playerstore, in}
-	cli.PlayPoker()
+	for _, c := range cases {
+		t.Run(fmt.Sprintf("record %s win from user input", c), func(t *testing.T) {
+			in := strings.NewReader(fmt.Sprintf("%s wins\n", c))
+			playerStore := &StubPlayerStore{}
 
-	assertPlayerWin(t, playerstore, "Chris")
+			cli := &CLI{playerStore, in}
+			cli.PlayPoker()
+
+			assertPlayerWin(t, playerStore, c)
+		})
+	}
 }
