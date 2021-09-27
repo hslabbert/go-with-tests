@@ -1,9 +1,11 @@
-package poker
+package poker_test
 
 import (
 	"fmt"
 	"strings"
 	"testing"
+
+	poker "github.com/hslabbert/go-with-tests/http-server"
 )
 
 func TestCLI(t *testing.T) {
@@ -15,12 +17,12 @@ func TestCLI(t *testing.T) {
 	for _, c := range cases {
 		t.Run(fmt.Sprintf("record %s win from user input", c), func(t *testing.T) {
 			in := strings.NewReader(fmt.Sprintf("%s wins\n", c))
-			playerStore := &StubPlayerStore{}
+			playerStore := &poker.StubPlayerStore{}
 
-			cli := &CLI{playerStore, in}
+			cli := poker.NewCLI(playerStore, in)
 			cli.PlayPoker()
 
-			assertPlayerWin(t, playerStore, c)
+			poker.AssertPlayerWin(t, playerStore, c)
 		})
 	}
 }

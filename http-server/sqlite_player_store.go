@@ -3,6 +3,7 @@ package poker
 import (
 	"database/sql"
 
+	// Need blank import to decorate sql interface
 	_ "github.com/mattn/go-sqlite3"
 )
 

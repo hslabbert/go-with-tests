@@ -9,21 +9,32 @@ import (
 // A CLI wraps a playerstore and supports reading an io.Reader
 // to record user input.
 type CLI struct {
-	playerstore PlayerStore
-	in          io.Reader
+	playerStore PlayerStore
+	in          *bufio.Scanner
+}
+
+// NewCLI constructs a *CLI from the provided PlayerStore and
+// user input.
+func NewCLI(store PlayerStore, in io.Reader) *CLI {
+	return &CLI{
+		playerStore: store,
+		in:          bufio.NewScanner(in),
+	}
 }
 
 // PlayPoker records a win on the playerStore in the provided
 // *CLI
 func (cli *CLI) PlayPoker() {
+	userInput := cli.readLine()
 
-	reader := bufio.NewScanner(cli.in)
-	reader.Scan()
-
-	player := extractWinner(reader.Text())
-	cli.playerstore.RecordWin(player)
+	cli.playerStore.RecordWin(extractWinner(userInput))
 }
 
 func extractWinner(userInput string) string {
 	return strings.Replace(userInput, " wins", "", 1)
+}
+
+func (cli *CLI) readLine() string {
+	cli.in.Scan()
+	return cli.in.Text()
 }
