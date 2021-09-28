@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
+	"time"
 )
 
 // A CLI wraps a playerstore and supports reading an io.Reader
@@ -13,9 +14,13 @@ type CLI struct {
 	in          *bufio.Scanner
 }
 
+type BlindAlerter interface {
+	ScheduleAlertAt(duration time.Duration, amount int)
+}
+
 // NewCLI constructs a *CLI from the provided PlayerStore and
 // user input.
-func NewCLI(store PlayerStore, in io.Reader) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
 	return &CLI{
 		playerStore: store,
 		in:          bufio.NewScanner(in),
