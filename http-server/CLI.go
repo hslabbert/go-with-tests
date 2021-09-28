@@ -15,11 +15,6 @@ type CLI struct {
 	alerter     BlindAlerter
 }
 
-// A BlindAlerter implements a ScheduleAlertAt() method.
-type BlindAlerter interface {
-	ScheduleAlertAt(duration time.Duration, amount int)
-}
-
 // NewCLI constructs a *CLI from the provided PlayerStore and
 // user input.
 func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
