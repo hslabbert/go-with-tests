@@ -49,7 +49,7 @@ func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
 
 func TestCLI(t *testing.T) {
 
-	t.Run("it prompts the user to enter the number of players and starts the game", func(t *testing.T) {
+	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		game := &GameSpy{}
 		in := userSends("3", "Chris wins")
@@ -62,28 +62,16 @@ func TestCLI(t *testing.T) {
 		assertFinishCalledWith(t, game, "Chris")
 	})
 
-	t.Run("finish game with 'Chris' as winner", func(t *testing.T) {
-		in := strings.NewReader("1\nChris wins\n")
+	t.Run("start game with 8 players and finish game with 'Cleo' as winner", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
 		game := &GameSpy{}
-		cli := poker.NewCLI(in, dummyStdOut, game)
+		in := userSends("8", "Cleo wins")
 
+		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()
 
-		if game.FinishedWith != "Chris" {
-			t.Errorf("expected finish called with 'Chris' but got %q", game.FinishedWith)
-		}
-	})
-
-	t.Run("record 'Cleo' win from user input", func(t *testing.T) {
-		in := strings.NewReader("1\nCleo wins\n")
-		game := &GameSpy{}
-		cli := poker.NewCLI(in, dummyStdOut, game)
-
-		cli.PlayPoker()
-
-		if game.FinishedWith != "Cleo" {
-			t.Errorf("expected finish called with 'Cleo' but got %q", game.FinishedWith)
-		}
+		assertGameStartedWith(t, game, 8)
+		assertFinishCalledWith(t, game, "Cleo")
 	})
 
 	t.Run("it prints an eror when a non numeric value is entered and does not start the game", func(T *testing.T) {
@@ -94,13 +82,8 @@ func TestCLI(t *testing.T) {
 		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()
 
-		wantPrompt := poker.PlayerPrompt + poker.BadPlayerInputErrMsg
-
-		assertMessagesSentToUser(t, stdout, wantPrompt)
-
-		if game.StartCalled {
-			t.Errorf("game should not have started")
-		}
+		assertGameNotStarted(t, game)
+		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
 	})
 }
 
@@ -135,5 +118,11 @@ func assertFinishCalledWith(t testing.TB, game *GameSpy, want string) {
 	t.Helper()
 	if game.FinishedWith != want {
 		t.Errorf("wanted Start called with %s want %s", game.FinishedWith, want)
+	}
+}
+
+func assertGameNotStarted(t testing.TB, game *GameSpy) {
+	if game.StartCalled {
+		t.Errorf("game should not have started")
 	}
 }
