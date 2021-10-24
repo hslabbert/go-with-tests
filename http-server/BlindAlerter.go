@@ -21,7 +21,7 @@ func (a BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int) {
 	a(duration, amount)
 }
 
-// StdOutAlerter is a BlindAlerter. It takes a time and amount,
+// StdOutAlerter is a BlindAlerterFunc. It takes a time and amount,
 // spinning that into a goroutine via time.AfterFunc() to print
 // updated Blind values to os.Stdout.
 func StdOutAlerter(duration time.Duration, amount int) {
