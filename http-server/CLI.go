@@ -12,6 +12,10 @@ import (
 // Game to provide the number of players in the Game.
 const PlayerPrompt = "Please enter the number of players: "
 
+// BadPlayerInputErrMsg is returned when the wrong type of value is
+// supplied for starting a game, in providing the player count.
+const BadPlayerInputErrMsg = "Bad value received for number of players, please try again with a number"
+
 // A Game implements Start and Finish methods to start a game
 // with the specified number of players, and finish a game by recording
 // the winner.
@@ -46,7 +50,7 @@ func (cli *CLI) PlayPoker() {
 	numberOfPlayers, err := strconv.Atoi(cli.readLine())
 
 	if err != nil {
-		fmt.Fprintf(cli.out, "you're so silly")
+		fmt.Fprintf(cli.out, BadPlayerInputErrMsg)
 		return
 	}
 
