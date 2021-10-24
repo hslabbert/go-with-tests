@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+// PlayerPrompt is simply a string fired at the start of a
+// Game to provide the number of players in the Game.
 const PlayerPrompt = "Please enter the number of players: "
 
 // A CLI wraps a playerstore and supports reading an io.Reader
