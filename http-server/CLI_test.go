@@ -74,7 +74,7 @@ func TestCLI(t *testing.T) {
 		assertFinishCalledWith(t, game, "Cleo")
 	})
 
-	t.Run("it prints an eror when a non numeric value is entered and does not start the game", func(T *testing.T) {
+	t.Run("it prints an eror when a non numeric value is entered and does not start the game", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		in := strings.NewReader("Pies\n")
 		game := &GameSpy{}
@@ -84,6 +84,18 @@ func TestCLI(t *testing.T) {
 
 		assertGameNotStarted(t, game)
 		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
+	})
+
+	t.Run("it prints an error when the winner is entered incorrectly", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		game := &GameSpy{}
+		in := userSends("8", "Lloyd is a killer", "Bob wins")
+
+		cli := poker.NewCLI(in, stdout, game)
+		cli.PlayPoker()
+
+		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadWinnerInputErrMsg)
+		assertFinishCalledWith(t, game, "Bob")
 	})
 }
 
@@ -110,14 +122,14 @@ func userSends(messages ...string) io.Reader {
 func assertGameStartedWith(t testing.TB, game *GameSpy, want int) {
 	t.Helper()
 	if game.StartedWith != want {
-		t.Errorf("wanted Start called with %d want %d", game.StartedWith, want)
+		t.Errorf("wanted Start called with %d but got %d", want, game.StartedWith)
 	}
 }
 
 func assertFinishCalledWith(t testing.TB, game *GameSpy, want string) {
 	t.Helper()
 	if game.FinishedWith != want {
-		t.Errorf("wanted Start called with %s want %s", game.FinishedWith, want)
+		t.Errorf("wanted Finish called with %s but got %s", want, game.FinishedWith)
 	}
 }
 
