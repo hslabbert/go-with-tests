@@ -13,10 +13,11 @@ type BlindAlerter interface {
 
 // A BlindAlerterFunc function takes a time & amount for
 // blinds to provide an implementation-independent interface.
+// This allows you to implement BlindAlerter with a function.
 type BlindAlerterFunc func(duration time.Duration, amount int)
 
-// ScheduleAlertAt hands a duration and time to the provided
-// BlindAlerterFunc.
+// ScheduleAlertAt is BlindAlerterFunc implementation of BlindAlerter
+// It hands a duration and time to the provided BlindAlerterFunc.
 func (a BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int) {
 	a(duration, amount)
 }
