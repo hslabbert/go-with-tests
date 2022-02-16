@@ -2,6 +2,14 @@ package poker
 
 import "time"
 
+// A Game implements Start and Finish methods to start a game
+// with the specified number of players, and finish a game by recording
+// the winner.
+type Game interface {
+	Start(numberOfPlayers int)
+	Finish(winner string)
+}
+
 // A TexasHoldem holds a PlayerStore and a BlindAlerter that
 // schedules alerts to be fired for blind raises at
 // pre-specified intervals.

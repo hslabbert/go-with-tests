@@ -21,14 +21,6 @@ const BadPlayerInputErrMsg = "Bad value received for number of players, please t
 // inputted incorrectly during a game.
 const BadWinnerInputErrMsg = "Bad value for winner, please try again with the string '<winner> wins'\n"
 
-// A Game implements Start and Finish methods to start a game
-// with the specified number of players, and finish a game by recording
-// the winner.
-type Game interface {
-	Start(numberOfPlayers int)
-	Finish(winner string)
-}
-
 // A CLI wraps a playerstore and supports reading an io.Reader
 // to record user input.
 type CLI struct {
