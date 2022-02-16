@@ -1,12 +1,16 @@
 package poker
 
-import "time"
+import (
+	"io"
+	"os"
+	"time"
+)
 
 // A Game implements Start and Finish methods to start a game
 // with the specified number of players, and finish a game by recording
 // the winner.
 type Game interface {
-	Start(numberOfPlayers int)
+	Start(numberOfPlayers int, alertsDestination io.Writer)
 	Finish(winner string)
 }
 
@@ -21,13 +25,13 @@ type TexasHoldem struct {
 // Start will start running a *Game of the provided numberOfPlayers,
 // setting up the needed blind alerts using the BlindAlerter in
 // *Game alerter.
-func (p *TexasHoldem) Start(numberOfPlayers int) {
+func (p *TexasHoldem) Start(numberOfPlayers int, to io.Writer) {
 	blindIncrement := time.Duration(5+numberOfPlayers) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
-		p.alerter.ScheduleAlertAt(blindTime, blind)
+		p.alerter.ScheduleAlertAt(blindTime, blind, os.Stdout)
 		blindTime = blindTime + blindIncrement
 	}
 }

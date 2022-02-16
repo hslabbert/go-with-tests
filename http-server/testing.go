@@ -2,6 +2,7 @@ package poker
 
 import (
 	"fmt"
+	"io"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -91,6 +92,6 @@ type SpyBlindAlerter struct {
 }
 
 // ScheduleAlertAt records alerts that have been scheduled.
-func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Writer) {
 	s.Alerts = append(s.Alerts, ScheduledAlert{at, amount})
 }

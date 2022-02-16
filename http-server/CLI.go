@@ -51,7 +51,7 @@ func (cli *CLI) PlayPoker() {
 		return
 	}
 
-	cli.game.Start(numberOfPlayers)
+	cli.game.Start(numberOfPlayers, cli.out)
 
 	var winner string
 	for winner == "" {
