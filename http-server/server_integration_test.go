@@ -27,9 +27,9 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		storeType string
 		server    *PlayerServer
 	}{
-		{"InMemoryPlayerStore", NewPlayerServer(inMemoryStore)},
-		{"SqlitePlayerStore", NewPlayerServer(sqliteStore)},
-		{"FilePlayerStore", NewPlayerServer(fileStore)},
+		{"InMemoryPlayerStore", mustMakePlayerServer(t, inMemoryStore)},
+		{"SqlitePlayerStore", mustMakePlayerServer(t, sqliteStore)},
+		{"FilePlayerStore", mustMakePlayerServer(t, fileStore)},
 	}
 
 	for _, c := range cases {

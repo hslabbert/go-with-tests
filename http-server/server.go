@@ -11,12 +11,19 @@ import (
 )
 
 const jsonContentType = "application/json"
+const htmlTemplatePath = "game.html"
+
+var wsUpgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 // A PlayerServer implements the needed methods to satisfy the
 // http.Handler interface (ServeHTTP), and holds a PlayerStore.
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+	template *template.Template
 }
 
 // A Player holds a player's name and score.
@@ -28,9 +35,16 @@ type Player struct {
 // NewPlayerServer takes a PlayerStore and returns a
 // *PlayerServer with the needed *http.ServeMux router
 // as the PlayerServer.Handler.
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
 	p := new(PlayerServer)
 
+	tmpl, err := template.ParseFiles(htmlTemplatePath)
+
+	if err != nil {
+		return nil, fmt.Errorf("problem opening %s %v", htmlTemplatePath, err)
+	}
+
+	p.template = tmpl
 	p.store = store
 
 	router := http.NewServeMux()
@@ -42,7 +56,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 	p.Handler = router
 
-	return p
+	return p, nil
 }
 
 // A PlayerStore implements the needed methods to update and retrieve
@@ -70,24 +84,11 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("game.html")
-
-	if err != nil {
-		http.Error(w, fmt.Sprintf("problem loading template %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	tmpl.Execute(w, nil)
+	p.template.Execute(w, nil)
 }
 
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-
-	conn, _ := upgrader.Upgrade(w, r, nil)
-
+	conn, _ := wsUpgrader.Upgrade(w, r, nil)
 	_, winnerMsg, _ := conn.ReadMessage()
 	p.store.RecordWin(string(winnerMsg))
 
