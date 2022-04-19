@@ -5,20 +5,21 @@ import (
 	"os"
 )
 
-type tape struct {
-	file *os.File
+// A Tape reads a file on disk and provides seek functionality.
+type Tape struct {
+	File *os.File
 }
 
-func (t *tape) Write(p []byte) (n int, err error) {
-	err = t.file.Truncate(0)
+func (t *Tape) Write(p []byte) (n int, err error) {
+	err = t.File.Truncate(0)
 	if err != nil {
-		return 0, fmt.Errorf("problem truncating file %s, %v", t.file.Name(), err)
+		return 0, fmt.Errorf("problem truncating file %s, %v", t.File.Name(), err)
 	}
 
-	_, err = t.file.Seek(0, 0)
+	_, err = t.File.Seek(0, 0)
 	if err != nil {
-		return 0, fmt.Errorf("problem resetting to 0 offset on file %s, %v", t.file.Name(), err)
+		return 0, fmt.Errorf("problem resetting to 0 offset on file %s, %v", t.File.Name(), err)
 	}
 
-	return t.file.Write(p)
+	return t.File.Write(p)
 }
